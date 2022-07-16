@@ -32,7 +32,7 @@ rule trim_reads_pe:
 
 rule map_reads:
     input:
-        reads=get_trimmed_reads if config['processing']['trim'] else unpack(get_fastq)
+        reads=get_trimmed_reads if config['processing']['trim'] else unpack(get_fastq),
         idx=rules.bwa_index.output,
     output:
         temp("mapped/{sample}-{unit}.sorted.bam"),
