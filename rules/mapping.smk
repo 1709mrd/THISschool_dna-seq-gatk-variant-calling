@@ -32,7 +32,7 @@ rule trim_reads_pe:
 
 rule map_reads:
     input:
-        reads=get_trimmed_reads,
+        reads=get_reads,
         idx=rules.bwa_index.output,
     output:
         temp("mapped/{sample}-{unit}.sorted.bam"),

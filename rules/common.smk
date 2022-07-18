@@ -67,22 +67,35 @@ def get_read_group(wildcards):
 
 def get_trimmed_reads(wildcards):
     """Get trimmed reads of given sample-unit."""
-    if not is_single_end(**wildcards):
-        # paired-end sample
-        return expand(
-            "trimmed/{sample}-{unit}.{group}.fastq.gz", group=[1, 2], **wildcards
-        )
-    # single end sample
-    return "trimmed/{sample}-{unit}.fastq.gz".format(**wildcards)
-
+    if config['processing']['trim']
+        if not is_single_end(**wildcards):
+            # paired-end sample
+            return expand(
+                "trimmed/{sample}-{unit}.{group}.fastq.gz", group=[1, 2], **wildcards
+            )
+        # single end sample
+        return "trimmed/{sample}-{unit}.fastq.gz".format(**wildcards)
+    else
+        fastqs = units.loc[(wildcards.sample, wildcards.unit), ["fq1", "fq2"]].dropna()
+            if len(fastqs) == 2:
+                return {"r1": fastqs.fq1, "r2": fastqs.fq2}
+            return {"r1": fastqs.fq1}
+        
 
 def get_sample_bams(wildcards):
-    """Get all aligned reads of given sample."""
-    return expand(
-        "recal/{sample}-{unit}.bam",
-        sample=wildcards.sample,
-        unit=units.loc[wildcards.sample].unit,
-    )
+    if config['processing']['bqsr']:
+        """Get all aligned reads of given sample."""
+        return expand(
+            "results/recal/{sample}-{unit}.bam",
+            sample=wildcards.sample,
+            unit=units.loc[wildcards.sample].unit,
+        )
+    else
+        return expand(
+            "results/dedup/{sample}-{unit}.bam",
+            sample=wildcards.sample,
+            unit=units.loc[wildcards.sample].unit,
+        )    
 
 
 def get_regions_param(regions=config["processing"].get("restrict-regions"), default=""):
